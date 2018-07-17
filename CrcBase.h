@@ -5,8 +5,13 @@
 #ifndef CRC_WPMC_CRCBASE_H
 #define CRC_WPMC_CRCBASE_H
 
-#include <stdint-gcc.h>
+#include <time.h>
+#include <stdlib.h>
+#include <iostream>
 
+using namespace std;
+
+uint8_t *generate_data(size_t length);
 
 template<class T>
 class CrcBase {
@@ -102,6 +107,59 @@ public:
     virtual T crc_s8(uint8_t *data, uint64_t length) = 0;
 
     virtual T mod(T p) = 0;
+
+    void perf(uint64_t length, int rep) {
+        T crc1, crc2, crc3, crc4, crc5, crc6;
+        clock_t b1, e1, b2, e2, b3, e3, b4, e4, b5, e5, b6, e6;
+        uint8_t *data = generate_data(length);
+
+        b1 = clock();
+        for (int i = 0; i < rep; i++)
+            crc1 = crc_s1(data, length);
+        e1 = clock();
+
+        b2 = clock();
+        for (int i = 0; i < rep; i++)
+            crc2 = crc_s2(data, length);
+        e2 = clock();
+
+        b3 = clock();
+        for (int i = 0; i < rep; i++)
+            crc3 = crc_s4(data, length);
+        e3 = clock();
+
+        b4 = clock();
+        for (int i = 0; i < rep; i++)
+            crc4 = crc_s8(data, length);
+        e4 = clock();
+
+        b5 = clock();
+        for (int i = 0; i < rep; i++)
+            crc5 = crc(data, length);
+        e5 = clock();
+
+        b6 = clock();
+        for (int i = 0; i < rep; i++)
+            crc6 = crc_serial(data, length);
+        e6 = clock();
+
+        cout << "s1\t\t" << e1 - b1 << '\t' << double(length) * rep / (e1 - b1) * CLOCKS_PER_SEC / 1024 / 1024 << endl;
+        cout << "s2\t\t" << e2 - b2 << '\t' << double(length) * rep / (e2 - b2) * CLOCKS_PER_SEC / 1024 / 1024 << endl;
+        cout << "s4\t\t" << e3 - b3 << '\t' << double(length) * rep / (e3 - b3) * CLOCKS_PER_SEC / 1024 / 1024 << endl;
+        cout << "s8\t\t" << e4 - b4 << '\t' << double(length) * rep / (e4 - b4) * CLOCKS_PER_SEC / 1024 / 1024 << endl;
+        cout << "crc\t\t" << e5 - b5 << '\t' << double(length) * rep / (e5 - b5) * CLOCKS_PER_SEC / 1024 / 1024 << endl;
+        cout << "serial\t" << e6 - b6 << '\t' << double(length) * rep / (e6 - b6) * CLOCKS_PER_SEC / 1024 / 1024
+             << endl;
+
+        cout << crc1 << endl;
+        cout << crc2 << endl;
+        cout << crc3 << endl;
+        cout << crc4 << endl;
+        cout << crc5 << endl;
+        cout << crc6 << endl;
+
+        free(data);
+    }
 };
 
 

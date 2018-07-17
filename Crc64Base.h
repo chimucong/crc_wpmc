@@ -1,0 +1,69 @@
+//
+// Created by test on 7/17/18.
+//
+
+#ifndef CRC_WPMC_CRC64BASE_H
+#define CRC_WPMC_CRC64BASE_H
+
+#include "CrcBase.h"
+
+class Crc64Base : public CrcBase<uint64_t> {
+public:
+    Crc64Base(uint64_t poly) : CrcBase(poly) {
+    }
+
+    uint64_t crc_s1(uint8_t *data, uint64_t length) {
+        uint8_t *p = (uint8_t *) data;
+        uint8_t *end = (uint8_t *) (data + length);
+        uint64_t crc = 0;
+        while (p < end) {
+            crc ^= *p;
+            crc = (crc >> 8) ^ table_8[crc & 0xff];
+            p++;
+        }
+        return crc;
+    }
+
+    uint64_t crc_s2(uint8_t *data, uint64_t length) {
+        uint16_t *p = (uint16_t *) data;
+        uint16_t *end = (uint16_t *) (data + length);
+        uint64_t crc = 0;
+        while (p < end) {
+            crc ^= *p;
+            crc = (crc >> 16) ^ table_16[crc & 0xff] ^ table_8[(crc >> 8) & 0xff];
+            p++;
+        }
+        return crc;
+    }
+
+    uint64_t crc_s4(uint8_t *data, uint64_t length) {
+        uint32_t *p = (uint32_t *) data;
+        uint32_t *end = (uint32_t *) (data + length);
+        uint64_t crc = 0;
+        while (p < end) {
+            crc ^= *p;
+            crc = (crc >> 32) ^ table_32[crc & 0xff] ^ table_24[(crc >> 8) & 0xff]
+                  ^ table_16[(crc >> 16) & 0xff] ^ table_8[(crc >> 24) & 0xff];
+            p++;
+        }
+        return crc;
+    }
+
+    uint64_t crc_s8(uint8_t *data, uint64_t length) {
+        uint64_t *p = (uint64_t *) data;
+        uint64_t *end = (uint64_t *) (data + length);
+        uint64_t crc = 0;
+        while (p < end) {
+            crc ^= *p;
+            crc = table_64[crc & 0xff] ^ table_56[(crc >> 8) & 0xff]
+                  ^ table_48[(crc >> 16) & 0xff] ^ table_40[(crc >> 24) & 0xff]
+                  ^ table_32[(crc >> 32) & 0xff] ^ table_24[(crc >> 40) & 0xff]
+                  ^ table_16[(crc >> 48) & 0xff] ^ table_8[(crc >> 56) & 0xff];
+            p++;
+        }
+        return crc;
+    }
+};
+
+
+#endif //CRC_WPMC_CRC64BASE_H

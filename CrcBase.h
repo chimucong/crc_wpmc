@@ -151,12 +151,12 @@ public:
         cout << "serial\t" << e6 - b6 << '\t' << double(length) * rep / (e6 - b6) * CLOCKS_PER_SEC / 1024 / 1024
              << endl;
 
-        cout << crc1 << endl;
-        cout << crc2 << endl;
-        cout << crc3 << endl;
-        cout << crc4 << endl;
-        cout << crc5 << endl;
-        cout << crc6 << endl;
+        cout << (unsigned long) crc1 << endl;
+        cout << (unsigned long) crc2 << endl;
+        cout << (unsigned long) crc3 << endl;
+        cout << (unsigned long) crc4 << endl;
+        cout << (unsigned long) crc5 << endl;
+        cout << (unsigned long) crc6 << endl;
 
         free(data);
     }

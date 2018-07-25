@@ -18,6 +18,32 @@ public:
 
         return p;
     }
+
+    uint8_t crc_4(uint8_t *data, uint64_t length) {
+        uint8_t *start = data;
+        uint8_t *end = data + length;
+        uint8_t p = 0;
+        while (start < end) {
+            p ^= *(start);
+            p = p ^ (p << 7) ^ (p << 6) ^ (p << 3) ^ (p << 1);
+            p = p ^ (p >> 7) ^ (p >> 6) ^ (p >> 4) ^ (p >> 2);
+
+            p ^= *(start + 1);
+            p = p ^ (p << 7) ^ (p << 6) ^ (p << 3) ^ (p << 1);
+            p = p ^ (p >> 7) ^ (p >> 6) ^ (p >> 4) ^ (p >> 2);
+
+            p ^= *(start + 2);
+            p = p ^ (p << 7) ^ (p << 6) ^ (p << 3) ^ (p << 1);
+            p = p ^ (p >> 7) ^ (p >> 6) ^ (p >> 4) ^ (p >> 2);
+
+            p ^= *(start + 3);
+            p = p ^ (p << 7) ^ (p << 6) ^ (p << 3) ^ (p << 1);
+            p = p ^ (p >> 7) ^ (p >> 6) ^ (p >> 4) ^ (p >> 2);
+
+            start += 4;
+        }
+        return p;
+    }
 };
 
 
